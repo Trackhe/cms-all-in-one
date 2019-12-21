@@ -1,11 +1,6 @@
 #Download base image
 FROM debian:latest
 
-ARG mysqlusernamepw
-ARG mysqlusername
-ARG mariadb
-ENV mysqlusernamepw $mysqlusernamepw
-ENV mysqlusername $mysqlusername
 #Update & upgrade
 RUN apt-get update && apt-get upgrade -y
 #Install Essential Items.
@@ -22,11 +17,7 @@ RUN apt-get update && apt-get -y install php \
     php7.4-mysql \
     php7.4-mbstring
 
-RUN /bin/sh && \
-    if [ "$mariadb" != "mysql" ]; \
-    then /bin/bash && apt-get -y install mariadb-server; \
-    else echo Argument hm ist $mariadb asd $local; \
-    fi
+RUN /bin/sh && /bin/bash && apt-get -y install mariadb-server
 
 RUN /bin/bash && cd /var/www/html && mkdir dev && chown www-data:www-data dev && echo "<?php phpinfo(); ?>" > info.php && \
     wget https://www.phpmyadmin.net/downloads/phpMyAdmin-latest-all-languages.zip && unzip phpMyAdmin-latest-all-languages.zip && rm phpMyAdmin-l* && mv phpMyAdmin-* phpmyadmin && \
@@ -37,12 +28,11 @@ RUN /bin/bash && cd /var/www/html && mkdir dev && chown www-data:www-data dev &&
     echo "ServerAdmin webmaster@localhost" >> 000-default.conf && \
     echo "DocumentRoot /var/www/html" >> 000-default.conf && \
     echo "</VirtualHost>" >> 000-default.conf && \
-    cd /etc/apache2 && echo "ServerName localhost" >> apache2.conf && \
-    service mysql start && mysql -u root -e "CREATE USER '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw';" && \
-    mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw'; FLUSH PRIVILEGES;"
+    cd /etc/apache2 && echo "ServerName localhost" >> apache2.conf
+
 
 #start serivces
-CMD service apache2 start && service mysql start && /bin/bash && tail -f /dev/null
+CMD service apache2 start && service mysql start && mysql -u root -e "CREATE USER IF NOT EXISTS'admin'@'%' IDENTIFIED BY 'admin';" && mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin'; FLUSH PRIVILEGES;" && /bin/bash && tail -f /dev/null
 #Open PORTS
 EXPOSE 80 443
 VOLUME /var/www/html/dev
