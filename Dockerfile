@@ -37,10 +37,12 @@ RUN /bin/bash && cd /var/www/html && mkdir dev && chown www-data:www-data dev &&
     echo "ServerAdmin webmaster@localhost" >> 000-default.conf && \
     echo "DocumentRoot /var/www/html" >> 000-default.conf && \
     echo "</VirtualHost>" >> 000-default.conf && \
-    cd /etc/apache2 && echo "ServerName localhost" >> apache2.conf
+    cd /etc/apache2 && echo "ServerName localhost" >> apache2.conf && \
+    service mysql start && mysql -u root -e "CREATE USER '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw';" && \
+    mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw'; FLUSH PRIVILEGES;"
 
 #start serivces
-CMD service apache2 start && service mysql start && mysql -u root -e "CREATE USER '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw';" && mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO '$mysqlusername'@'%' IDENTIFIED BY '$mysqlusernamepw'; FLUSH PRIVILEGES;" && /bin/bash && tail -f /dev/null
+CMD service apache2 start && service mysql start && /bin/bash && tail -f /dev/null
 #Open PORTS
 EXPOSE 80 443
 VOLUME /var/www/html/dev
