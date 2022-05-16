@@ -32,7 +32,7 @@ RUN /bin/bash && cd /var/www/html && mkdir dev && chown www-data:www-data dev &&
 
 
 #start serivces
-CMD service apache2 start && service mysql start && mysql -u root -e "CREATE USER IF NOT EXISTS 'admin'@'%' IDENTIFIED BY 'admin';" && mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%'; GRANT GRANT OPTION ON *.* TO 'admin'@'%'; FLUSH PRIVILEGES;" && /bin/bash && tail -f /dev/null
+CMD /bin/sh -c service apache2 start && service mysql start && mysql -u root -e "CREATE USER IF NOT EXISTS \"admin\"@\"%\" IDENTIFIED BY \"admin\";" && mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO \"admin\"@\"%\"; GRANT GRANT OPTION ON *.* TO \"admin\"@\"%\"; FLUSH PRIVILEGES;" && /bin/bash && tail -f /dev/null
 #Open PORTS
 EXPOSE 80 443
 VOLUME /var/www/html/dev
