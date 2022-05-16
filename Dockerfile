@@ -36,3 +36,4 @@ CMD service apache2 start && service mysql start && mysql -u root -e "CREATE USE
 #Open PORTS
 EXPOSE 80 443
 VOLUME /var/www/html/dev
+VOLUME /etc/mysql
